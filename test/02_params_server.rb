@@ -1,7 +1,7 @@
 require 'active_support/core_ext'
 require 'json'
 require 'webrick'
-require 'rails_lite'
+require './lib/rails_lite'
 
 # http://www.ruby-doc.org/stdlib-2.0/libdoc/webrick/rdoc/WEBrick.html
 # http://www.ruby-doc.org/stdlib-2.0/libdoc/webrick/rdoc/WEBrick/HTTPRequest.html
@@ -12,7 +12,7 @@ trap('INT') { server.shutdown }
 
 class ExampleController < ControllerBase
   def create
-    render_content(params.to_s, "text/json")
+    render_content(self.params.to_s, "text/json")
   end
 
   def new
