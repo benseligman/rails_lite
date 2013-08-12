@@ -3,7 +3,7 @@ require 'uri'
 
 class Params
   def initialize(req, route_params = {})
-    @params = get_params(req)
+    @params = params(req)
   end
 
   def [](key)
@@ -27,8 +27,9 @@ class Params
     params
   end
 
-  def get_params(req)
-    parse_www_encoded_form(req.query_string).merge(parse_www_encoded_form(req.body))
+  def params(req)
+    parse_www_encoded_form(req.query_string)
+      .merge(parse_www_encoded_form(req.body))
   end
 
 
@@ -45,8 +46,6 @@ class Params
 
   def parse_key(key)
     # Lazy regex version: key.scan(/[^\[\]]+/)
-    key.split('[').map do |el|
-      el[-1] == ']' ? el[0...-1] : el
-    end
+    key.split('[').map { |el| el.gsub(']', "") }
   end
 end

@@ -24,6 +24,7 @@ class MyController < ControllerBase
 end
 
 server.mount_proc '/' do |req, res|
+  debugger
   res = MyController.new(req, res).go
 end
 

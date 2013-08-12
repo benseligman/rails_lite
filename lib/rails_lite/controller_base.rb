@@ -27,6 +27,7 @@ class ControllerBase
     raise "response built" if response_built?
     @response_built = true
     @res.status = 302
+
     @res.header["location"] = url
     self.session.store_session(@res)
   end
@@ -52,6 +53,9 @@ class ControllerBase
   end
 
   def invoke_action(name)
+    self.send(name)
+    unless (already_rendered? || response_built?)
+      self.render_content(name)
+    end
   end
-
 end

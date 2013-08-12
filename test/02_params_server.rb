@@ -12,7 +12,7 @@ trap('INT') { server.shutdown }
 
 class ExampleController < ControllerBase
   def create
-    render_content(self.params.to_s, "text/json")
+    render_content(self.params, "text/json")
   end
 
   def new
