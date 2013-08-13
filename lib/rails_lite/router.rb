@@ -1,4 +1,3 @@
-require "debugger"
 class Route
   attr_reader :pattern, :http_method, :controller_class, :action_name
 
@@ -43,15 +42,29 @@ class Router
   end
 
   def run(req, res)
-    action = match(req)
-    unless action
+    route = match(req)
+
+    unless route
       res.status = 404
       return nil
     end
 
-    debugger
-    controller = action.controller_class
-    controller_instance = controller.new(req, res)
-    controller.invoke_action(action)
+    params = path_params(req.path, route.pattern)
+
+    controller = route.controller_class
+    controller_instance = controller.new(req, res, params)
+    controller_instance.invoke_action(route.action_name)
+  end
+
+
+  private
+  def path_params(path, pattern)
+    matches = path.match(pattern)
+    param_names = matches.names
+    params_hash = {}
+
+    param_names.each { |name| params_hash[name] = matches[name] }
+
+    params_hash
   end
 end
