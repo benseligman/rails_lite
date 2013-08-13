@@ -11,6 +11,10 @@ class ControllerBase
     @params = Params.new(@req, route_params)
   end
 
+  def flash
+    @flash ||= {}
+  end
+
   def session
     @session ||= Session.new(@req)
   end
@@ -29,13 +33,13 @@ class ControllerBase
     @res.status = 302
 
     @res.header["location"] = url
-    self.session.store_session(@res)
+    self.session.store(@res)
   end
 
   def render_content(body, content_type)
     raise "already rendered" if already_rendered?
     @already_rendered = true
-    self.session.store_session(@res)
+    self.session.store(@res)
 
     @res.content_type = content_type
     @res.body = body
@@ -44,7 +48,7 @@ class ControllerBase
   def render(template_name)
     raise "already rendered" if already_rendered?
     @already_rendered = true
-    self.session.store_session(@res)
+    self.session.store(@res)
 
     views_dir = self.class.name.underscore
     template = File.read("views/#{ views_dir }/#{ template_name }.html.erb")
