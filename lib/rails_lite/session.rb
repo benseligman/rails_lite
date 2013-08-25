@@ -4,7 +4,7 @@ require 'webrick'
 
 class Session
   def initialize(req)
-    @cookie = JSON.parse(Session.find_cookie(req))
+    @cookie = JSON.parse(Session.set_cookie(req))
   end
 
   def [](key)
@@ -12,31 +12,20 @@ class Session
   end
 
   def []=(key, val)
-    cookie_to_save[key] = val
+    @cookie[key] = val
   end
 
-  def store(res)
-    res.cookies << create_cookie
+  def store_session(res)
+    # debugger
+    cookie =  WEBrick::Cookie.new("_rails_lite_app", @cookie.to_json)
+    res.cookies << cookie
+    res
   end
 
   private
-
-  def cookie_to_save
-    @cookie
-  end
-
-  def self.cookie_name
-    "_rails_lite_app"
-  end
-
-
-  def create_cookie
-    WEBrick::Cookie.new(self.class.cookie_name, cookie_to_save.to_json)
-  end
-
-  def self.find_cookie(req)
+  def self.set_cookie(req)
     req_cookie = req.cookies
-      .select { |cookie| cookie.name == self.cookie_name }
+      .select { |cookie| cookie.name == "_rails_lite_app" }
       .first
 
     if req_cookie
